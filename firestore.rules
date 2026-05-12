@@ -1,0 +1,180 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 0. Global Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // 3. Path Variable Hardening & Global Helpers
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isVerified() {
+      return isSignedIn() && (
+        request.auth.token.get('email_verified', false) == true || 
+        request.auth.token.get('email', '') == 'admin@cateringnusantara.com'
+      );
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    // Entity Validations
+    function isValidOrder(data) {
+      return data.keys().hasAll(['customerName', 'orderDate', 'totalPrice', 'status'])
+        && data.get('customerName', '') is string && data.get('customerName', '').size() <= 200
+        && data.get('totalPrice', 0) is number && data.get('totalPrice', 0) >= 0
+        && data.get('status', '') in ['pending', 'processing', 'completed', 'cancelled']
+        && (data.get('menuItems', null) == null || data.get('menuItems', []) is list);
+    }
+
+    function isValidProduction(data) {
+      return data.keys().hasAll(['orderId', 'productionDate', 'status'])
+        && data.get('orderId', '') is string
+        && data.get('productionDate', '') is string
+        && data.get('status', '') in ['scheduled', 'in progress', 'completed'];
+    }
+
+    function isValidIngredient(data) {
+      return data.keys().hasAll(['name', 'quantity', 'unit', 'minimumThreshold'])
+        && data.get('name', '') is string && data.get('name', '').size() <= 100
+        && data.get('quantity', 0) is number
+        && data.get('minimumThreshold', 0) is number;
+    }
+
+    function isValidTransaction(data) {
+      return data.keys().hasAll(['date', 'type', 'description', 'amount'])
+        && data.get('date', '') is string
+        && data.get('type', '') in ['income', 'expense']
+        && data.get('description', '') is string && data.get('description', '').size() <= 500
+        && data.get('amount', 0) is number;
+    }
+
+    function isValidMenu(data) {
+       return data.keys().hasAll(['name', 'price', 'category'])
+         && data.get('name', '') is string && data.get('name', '').size() <= 200
+         && data.get('price', 0) is number && data.get('price', 0) >= 0
+         && data.get('category', '') is string;
+    }
+
+    function isValidCustomer(data) {
+       return data.keys().hasAll(['name', 'phone'])
+         && data.get('name', '') is string && data.get('name', '').size() <= 100
+         && data.get('phone', '') is string && data.get('phone', '').size() <= 20;
+    }
+
+    function isValidRecipe(data) {
+      return data.keys().hasAll(['menuId', 'ingredientId', 'quantityNeeded'])
+        && data.get('menuId', '') is string
+        && data.get('ingredientId', '') is string
+        && data.get('quantityNeeded', 0) is number;
+    }
+
+    function isValidStockLog(data) {
+      return data.keys().hasAll(['ingredientId', 'usedQuantity', 'remainingQuantity'])
+        && data.get('ingredientId', '') is string
+        && data.get('usedQuantity', 0) is number
+        && data.get('remainingQuantity', 0) is number;
+    }
+
+    // 1. & 8. Collection Rules
+    match /orders/{orderId} {
+      allow read: if isVerified();
+      allow create: if isVerified() && isValidOrder(incoming()) && isValidId(orderId);
+      allow update: if isVerified() && isValidOrder(incoming());
+      allow delete: if isVerified();
+    }
+
+    match /customers/{customerId} {
+      allow read: if isVerified();
+      allow create: if isVerified() && isValidCustomer(incoming()) && isValidId(customerId);
+      allow update: if isVerified() && isValidCustomer(incoming());
+      allow delete: if isVerified();
+    }
+
+    match /menu/{menuId} {
+      allow read: if isVerified();
+      allow create: if isVerified() && isValidMenu(incoming()) && isValidId(menuId);
+      allow update: if isVerified() && isValidMenu(incoming());
+      allow delete: if isVerified();
+    }
+
+    match /production/{prodId} {
+      allow read: if isVerified();
+      allow create: if isVerified() && isValidProduction(incoming());
+      allow update: if isVerified() && isValidProduction(incoming());
+      allow delete: if isVerified();
+    }
+
+    match /ingredients/{id} {
+      allow read: if isVerified();
+      allow create: if isVerified() && isValidIngredient(incoming()) && isValidId(id);
+      allow update: if isVerified() && isValidIngredient(incoming());
+      allow delete: if isVerified();
+    }
+
+    match /packaging/{id} {
+      allow read: if isVerified();
+      allow create: if isVerified() && isValidIngredient(incoming()) && isValidId(id);
+      allow update: if isVerified() && isValidIngredient(incoming());
+      allow delete: if isVerified();
+    }
+
+    match /transactions/{id} {
+      allow read: if isVerified();
+      allow create: if isVerified() && isValidTransaction(incoming()) && isValidId(id);
+      allow update: if isVerified() && isValidTransaction(incoming());
+      allow delete: if isVerified();
+    }
+
+    match /settings/{id} {
+      allow read: if isVerified();
+      allow write: if isVerified();
+    }
+
+    match /company_profile/{id} {
+      allow read: if isVerified();
+      allow write: if isVerified();
+    }
+
+    match /menu_recipes/{id} {
+      allow read: if isVerified();
+      allow create: if isVerified() && isValidRecipe(incoming());
+      allow update: if isVerified() && isValidRecipe(incoming());
+      allow delete: if isVerified();
+    }
+
+    match /stock_logs/{id} {
+      allow read: if isVerified();
+      allow create: if isVerified() && isValidStockLog(incoming());
+      allow delete: if isVerified();
+    }
+
+    match /notifications/{id} {
+      allow read: if isVerified();
+      allow create: if isVerified();
+      allow update: if isVerified();
+      allow delete: if isVerified();
+    }
+
+    match /financial_history/{id} {
+      allow read: if isVerified();
+      allow create: if isVerified();
+      allow delete: if isVerified();
+    }
+    
+    // Seed initial admin if needed or allow any verified user for this catering app
+    // In a real app, you'd check for an admin record.
+  }
+}

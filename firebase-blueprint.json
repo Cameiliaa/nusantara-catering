@@ -1,0 +1,188 @@
+{
+  "entities": {
+    "Order": {
+      "title": "Order",
+      "description": "Catering order details",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "customerId": { "type": "string" },
+        "customerName": { "type": "string" },
+        "customerPhone": { "type": "string" },
+        "orderDate": { "type": "string", "format": "date-time" },
+        "deliveryAddress": { "type": "string" },
+        "totalPrice": { "type": "number" },
+        "status": { "type": "string", "enum": ["pending", "processing", "completed", "cancelled"] },
+        "menuItems": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "menuId": { "type": "string" },
+              "name": { "type": "string" },
+              "quantity": { "type": "number" },
+              "price": { "type": "number" }
+            }
+          }
+        },
+        "note": { "type": "string" },
+        "productionId": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["customerName", "orderDate", "totalPrice", "status"]
+    },
+    "Customer": {
+      "title": "Customer",
+      "description": "Customer information",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "phone": { "type": "string" },
+        "email": { "type": "string" },
+        "address": { "type": "string" }
+      },
+      "required": ["name", "phone"]
+    },
+    "Menu": {
+      "title": "Menu",
+      "description": "Catering menu items",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "price": { "type": "number" },
+        "category": { "type": "string" },
+        "image": { "type": "string" }
+      },
+      "required": ["name", "price"]
+    },
+    "Production": {
+      "title": "Production Schedule",
+      "description": "Kitchen production tasks",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "orderId": { "type": "string" },
+        "customerName": { "type": "string" },
+        "productionDate": { "type": "string", "format": "date-time" },
+        "menuItems": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "menuId": { "type": "string" },
+              "name": { "type": "string" },
+              "quantity": { "type": "number" }
+            }
+          }
+        },
+        "quantity": { "type": "number" },
+        "assignedTo": { "type": "string" },
+        "status": { "type": "string", "enum": ["scheduled", "in progress", "completed"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["orderId", "productionDate", "status"]
+    },
+    "MenuRecipe": {
+      "title": "MenuRecipe",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "menuId": { "type": "string" },
+        "menuName": { "type": "string" },
+        "ingredientId": { "type": "string" },
+        "ingredientName": { "type": "string" },
+        "quantityNeeded": { "type": "number" },
+        "unit": { "type": "string" }
+      },
+      "required": ["menuId", "ingredientId", "quantityNeeded"]
+    },
+    "StockLog": {
+      "title": "StockLog",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "ingredientId": { "type": "string" },
+        "ingredientName": { "type": "string" },
+        "previousQuantity": { "type": "number" },
+        "usedQuantity": { "type": "number" },
+        "remainingQuantity": { "type": "number" },
+        "productionId": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["ingredientId", "usedQuantity", "remainingQuantity"]
+    },
+    "Ingredient": {
+      "title": "Ingredient",
+      "description": "Inventory/Stock items",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "quantity": { "type": "number" },
+        "unit": { "type": "string" },
+        "minimumThreshold": { "type": "number" },
+        "status": { "type": "string", "enum": ["safe", "low stock"] }
+      },
+      "required": ["name", "quantity", "unit", "minimumThreshold"]
+    },
+    "Transaction": {
+      "title": "Transaction",
+      "description": "Financial records",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "date": { "type": "string", "format": "date" },
+        "type": { "type": "string", "enum": ["income", "expense"] },
+        "description": { "type": "string" },
+        "category": { "type": "string" },
+        "amount": { "type": "number" },
+        "itemName": { "type": "string" },
+        "quantity": { "type": "number" },
+        "unit": { "type": "string" },
+        "notes": { "type": "string" },
+        "orderId": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["date", "type", "description", "amount"]
+    },
+    "Settings": {
+      "title": "Settings",
+      "description": "App configuration",
+      "type": "object",
+      "properties": {
+        "cateringName": { "type": "string" },
+        "businessAddress": { "type": "string" },
+        "contactEmail": { "type": "string" }
+      }
+    },
+    "CompanyProfile": {
+      "title": "Company Profile",
+      "description": "Public business information",
+      "type": "object",
+      "properties": {
+        "contactInfo": { "type": "string" },
+        "operationalHours": { "type": "string" },
+        "aboutUs": { "type": "string" }
+      }
+    }
+  },
+  "firestore": {
+    "orders": { "schema": "Order", "description": "Collection of orders" },
+    "customers": { "schema": "Customer", "description": "Collection of customers" },
+    "menu": { "schema": "Menu", "description": "Collection of menu items" },
+    "production": { "schema": "Production", "description": "Collection of production tasks" },
+    "ingredients": { "schema": "Ingredient", "description": "Collection of ingredients" },
+    "menu_recipes": { "schema": "MenuRecipe", "description": "Collection of menu recipes" },
+    "stock_logs": { "schema": "StockLog", "description": "Collection of stock movement logs" },
+    "transactions": { "schema": "Transaction", "description": "Collection of transactions" },
+    "settings": { "schema": "Settings", "description": "Global settings" },
+    "company_profile": { "schema": "CompanyProfile", "description": "Company profile info" },
+    "packaging": { "schema": "Ingredient", "description": "Collection of packaging items" }
+  }
+}
