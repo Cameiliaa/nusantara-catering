@@ -77,106 +77,137 @@ const Settings: React.FC = () => {
   };
 
   return (
-    <div className="max-w-4xl space-y-8">
-      <div>
-        <h1 className="text-2xl font-display font-bold text-gray-900">Pengaturan</h1>
-        <p className="text-gray-500 text-sm">Perbarui informasi bisnis dan preferensi keamanan Anda.</p>
+    <div className="max-w-5xl mx-auto space-y-12 pb-20 px-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-display font-black text-gray-900 tracking-tight">Pengaturan</h1>
+          <p className="text-slate-500 font-medium">Perbarui informasi bisnis dan preferensi keamanan Anda.</p>
+        </div>
+        <div className="hidden sm:block p-3 bg-orange-50 rounded-2xl">
+          <SettingsIcon className="w-8 h-8 text-primary animate-spin-slow" />
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <div className="md:col-span-1">
-          <h3 className="font-bold text-gray-900 flex items-center gap-2">
-            <Building className="w-5 h-5 text-primary" />
-            Informasi Umum
-          </h3>
-          <p className="text-sm text-gray-500 mt-1">Detail dasar tentang bisnis katering Anda.</p>
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+        <div className="lg:col-span-4">
+          <div className="sticky top-24 space-y-4">
+            <h3 className="text-xl font-bold text-gray-900 flex items-center gap-3">
+              <div className="p-2 bg-orange-100 rounded-xl">
+                <Building className="w-5 h-5 text-primary" />
+              </div>
+              Informasi Umum
+            </h3>
+            <p className="text-sm text-slate-500 leading-relaxed font-medium">Detail dasar tentang bisnis katering Anda. Informasi ini akan ditampilkan pada laporan dan profil publik.</p>
+          </div>
         </div>
-        <div className="md:col-span-2">
-          <form onSubmit={handleSaveSettings} className="bg-white p-6 rounded-2xl border border-orange-50 shadow-sm space-y-6">
-            <div className="space-y-2">
-              <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Nama Katering</label>
-              <input
-                type="text"
-                value={settings.cateringName}
-                onChange={(e) => setSettings({...settings, cateringName: e.target.value})}
-                className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20"
-              />
+        <div className="lg:col-span-8">
+          <form onSubmit={handleSaveSettings} className="bg-white p-8 sm:p-10 rounded-[2.5rem] border border-orange-50 shadow-sm space-y-8 relative overflow-hidden group">
+            <div className="absolute top-0 right-0 p-10 opacity-[0.02] -mr-10 -mt-10 group-hover:scale-110 transition-transform">
+              <Building className="w-40 h-40" />
             </div>
-            <div className="space-y-2">
-              <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Alamat Bisnis</label>
-              <textarea
-                rows={3}
-                value={settings.businessAddress}
-                onChange={(e) => setSettings({...settings, businessAddress: e.target.value})}
-                className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 resize-none"
-              />
+            
+            <div className="space-y-6 relative z-10">
+              <div className="space-y-3">
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Nama Katering</label>
+                <input
+                  type="text"
+                  value={settings.cateringName}
+                  onChange={(e) => setSettings({...settings, cateringName: e.target.value})}
+                  className="w-full px-6 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all text-lg font-bold shadow-sm"
+                />
+              </div>
+              <div className="space-y-3">
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Alamat Bisnis</label>
+                <textarea
+                  rows={3}
+                  value={settings.businessAddress}
+                  onChange={(e) => setSettings({...settings, businessAddress: e.target.value})}
+                  className="w-full px-6 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all text-lg font-medium resize-none shadow-sm"
+                />
+              </div>
+              <div className="space-y-3">
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Email Kontak</label>
+                <input
+                  type="email"
+                  value={settings.contactEmail}
+                  onChange={(e) => setSettings({...settings, contactEmail: e.target.value})}
+                  className="w-full px-6 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all text-lg font-medium shadow-sm"
+                />
+              </div>
             </div>
-            <div className="space-y-2">
-              <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Email Kontak</label>
-              <input
-                type="email"
-                value={settings.contactEmail}
-                onChange={(e) => setSettings({...settings, contactEmail: e.target.value})}
-                className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20"
-              />
-            </div>
-            <div className="flex items-center justify-end pt-4">
-              <button
+            
+            <div className="flex items-center justify-end pt-6 border-t border-slate-50">
+              <motion.button
                 type="submit"
                 disabled={loading}
-                className="bg-primary text-white px-8 py-3 rounded-xl font-bold shadow-lg shadow-primary/20 hover:bg-primary-dark transition-all flex items-center gap-2 disabled:opacity-70"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="bg-primary text-white px-10 py-5 rounded-2xl font-black text-lg shadow-2xl shadow-primary/30 hover:bg-primary-dark transition-all flex items-center gap-3 disabled:opacity-70"
               >
-                {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
-                Simpan Perubahan
-              </button>
+                {loading ? <Loader2 className="w-6 h-6 animate-spin" /> : <Save className="w-6 h-6" />}
+                SIMPAN PERUBAHAN
+              </motion.button>
             </div>
           </form>
         </div>
       </div>
 
-      <hr className="border-orange-50" />
+      <div className="h-px bg-gradient-to-r from-transparent via-orange-100 to-transparent" />
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pb-12">
-        <div className="md:col-span-1">
-          <h3 className="font-bold text-slate-800 flex items-center gap-2">
-            <Lock className="w-5 h-5 text-primary" />
-            Keamanan
-          </h3>
-          <p className="text-sm text-slate-500 mt-1">Amankan akun Anda dengan kata sandi yang kuat.</p>
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 pb-12">
+        <div className="lg:col-span-4">
+          <div className="sticky top-24 space-y-4">
+            <h3 className="text-xl font-bold font-display text-gray-900 flex items-center gap-3">
+              <div className="p-2 bg-slate-100 rounded-xl">
+                <Lock className="w-5 h-5 text-slate-600" />
+              </div>
+              Keamanan Akun
+            </h3>
+            <p className="text-sm text-slate-500 leading-relaxed font-medium">Amankan akses sistem Anda dengan memperbarui kata sandi secara berkala. Disarankan minimal 8 karakter.</p>
+          </div>
         </div>
-        <div className="md:col-span-2">
-          <form onSubmit={handleChangePassword} className="bg-white p-6 rounded-2xl border border-orange-50 shadow-sm space-y-6">
-            <div className="space-y-2">
-              <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Kata Sandi Baru</label>
-              <input
-                type="password"
-                required
-                value={passwords.newPassword}
-                onChange={(e) => setPasswords({...passwords, newPassword: e.target.value})}
-                className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20"
-                placeholder="Minimal 6 karakter"
-              />
+        <div className="lg:col-span-8">
+          <form onSubmit={handleChangePassword} className="bg-white p-8 sm:p-10 rounded-[2.5rem] border border-orange-50 shadow-sm space-y-8 overflow-hidden group relative">
+            <div className="absolute top-0 right-0 p-10 opacity-[0.02] -mr-10 -mt-10 group-hover:scale-110 transition-transform">
+              <Lock className="w-40 h-40" />
             </div>
-            <div className="space-y-2">
-              <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Konfirmasi Kata Sandi Baru</label>
-              <input
-                type="password"
-                required
-                value={passwords.confirmPassword}
-                onChange={(e) => setPasswords({...passwords, confirmPassword: e.target.value})}
-                className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20"
-                placeholder="Harus cocok dengan kata sandi baru"
-              />
+
+            <div className="space-y-6 relative z-10">
+              <div className="space-y-3">
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Kata Sandi Baru</label>
+                <input
+                  type="password"
+                  required
+                  value={passwords.newPassword}
+                  onChange={(e) => setPasswords({...passwords, newPassword: e.target.value})}
+                  className="w-full px-6 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all text-lg font-medium shadow-sm"
+                  placeholder="Minimal 6 karakter"
+                />
+              </div>
+              <div className="space-y-3">
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Konfirmasi Kata Sandi Baru</label>
+                <input
+                  type="password"
+                  required
+                  value={passwords.confirmPassword}
+                  onChange={(e) => setPasswords({...passwords, confirmPassword: e.target.value})}
+                  className="w-full px-6 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all text-lg font-medium shadow-sm"
+                  placeholder="Ulangi kata sandi baru"
+                />
+              </div>
             </div>
-            <div className="flex justify-end pt-4">
-              <button
+            
+            <div className="flex justify-end pt-6 border-t border-slate-50">
+              <motion.button
                 type="submit"
                 disabled={loading}
-                className="bg-slate-800 text-white px-8 py-3 rounded-xl font-bold hover:bg-slate-900 transition-all flex items-center gap-2 disabled:opacity-70"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="bg-slate-900 text-white px-10 py-5 rounded-2xl font-black text-lg shadow-2xl shadow-slate-200 transition-all flex items-center gap-3 disabled:opacity-70 hover:bg-black"
               >
-                {loading && <Loader2 className="w-5 h-5 animate-spin" />}
-                Perbarui Kata Sandi
-              </button>
+                {loading ? <Loader2 className="w-6 h-6 animate-spin" /> : <CheckCircle2 className="w-6 h-6" />}
+                PERBARUI KATA SANDI
+              </motion.button>
             </div>
           </form>
         </div>
