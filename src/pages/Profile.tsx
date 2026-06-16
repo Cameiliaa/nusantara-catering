@@ -8,7 +8,7 @@ const Profile: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [editing, setEditing] = useState(false);
   const [profile, setProfile] = useState({
-    contactInfo: 'admin@nusantaracatering.id | +62 812-3456-7890',
+    contactInfo: 'admin@nusantaracatering.id | +62 878-5589-1218',
     operationalHours: 'Sen - Jum: 08:00 - 17:00\nSab - Min: 09:00 - 15:00',
     aboutUs: 'Nusantara Catering menyajikan cita rasa tradisional Indonesia terbaik untuk acara spesial Anda. Kami menggunakan bahan-bahan segar dan resep otentik untuk memberikan pengalaman bersantap yang tak terlupakan.',
     address: 'Jl. Merdeka No. 123, Jakarta, Indonesia',
@@ -209,6 +209,22 @@ const Profile: React.FC = () => {
                     <div className="flex flex-col">
                       <span className="text-[10px] text-white/60 font-black uppercase tracking-widest mb-1">Hotline CS</span>
                       <span className="text-sm font-bold tracking-tight">+62 812-3456-7890</span>
+                    </div>
+                 </div>
+                 <div className="flex items-center gap-5">
+                    <div className="p-3 bg-white/20 rounded-2xl backdrop-blur-md border border-white/20">
+                       <Globe className="w-6 h-6 text-white" />
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-[10px] text-white/60 font-black uppercase tracking-widest mb-1">DOKUMENTASI</span>
+                      <a
+                        href="https://drive.google.com/drive/folders/1emxccodawr_G9eMOor_OphULFFykFPJA?usp=sharing"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm font-bold tracking-tight underline hover:opacity-80 transition-opacity"
+                      >
+                        📖 Panduan Penggunaan Sistem
+                      </a>
                     </div>
                  </div>
               </div>
