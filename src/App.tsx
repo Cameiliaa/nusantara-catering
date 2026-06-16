@@ -14,7 +14,6 @@ import Production from './pages/Production';
 import Stock from './pages/Stock';
 import Reports from './pages/Reports';
 import Transactions from './pages/Transactions';
-import Settings from './pages/Settings';
 import Profile from './pages/Profile';
 import Customers from './pages/Customers';
 import Menu from './pages/Menu';
@@ -62,7 +61,6 @@ export default function App() {
             <Route path="/reports" element={<PrivateRoute><Layout><Reports /></Layout></PrivateRoute>} />
             <Route path="/report-history" element={<PrivateRoute><Layout><ReportHistory /></Layout></PrivateRoute>} />
             <Route path="/transactions" element={<PrivateRoute><Layout><Transactions /></Layout></PrivateRoute>} />
-            <Route path="/settings" element={<PrivateRoute><Layout><Settings /></Layout></PrivateRoute>} />
             <Route path="/profile" element={<PrivateRoute><Layout><Profile /></Layout></PrivateRoute>} />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>

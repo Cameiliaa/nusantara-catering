@@ -151,16 +151,6 @@
       },
       "required": ["date", "type", "description", "amount"]
     },
-    "Settings": {
-      "title": "Settings",
-      "description": "App configuration",
-      "type": "object",
-      "properties": {
-        "cateringName": { "type": "string" },
-        "businessAddress": { "type": "string" },
-        "contactEmail": { "type": "string" }
-      }
-    },
     "CompanyProfile": {
       "title": "Company Profile",
       "description": "Public business information",
@@ -181,7 +171,6 @@
     "menu_recipes": { "schema": "MenuRecipe", "description": "Collection of menu recipes" },
     "stock_logs": { "schema": "StockLog", "description": "Collection of stock movement logs" },
     "transactions": { "schema": "Transaction", "description": "Collection of transactions" },
-    "settings": { "schema": "Settings", "description": "Global settings" },
     "company_profile": { "schema": "CompanyProfile", "description": "Company profile info" },
     "packaging": { "schema": "Ingredient", "description": "Collection of packaging items" }
   }
