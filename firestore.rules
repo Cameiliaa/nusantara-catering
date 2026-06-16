@@ -138,6 +138,10 @@ service cloud.firestore {
       allow delete: if isVerified();
     }
 
+    match /user_settings/{document=**} {
+      allow read, write: if isSignedIn();
+    }
+
     match /settings/{id} {
       allow read: if isVerified();
       allow write: if isVerified();

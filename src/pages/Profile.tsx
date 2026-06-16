@@ -1,51 +1,40 @@
 import React, { useState, useEffect } from 'react';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { db, handleFirestoreError, OperationType } from '../lib/firebase';
-import { Building2, Mail, Phone, Clock, Globe, Info, Save, Loader2, Utensils } from 'lucide-react';
+import { doc, onSnapshot } from 'firebase/firestore';
+import { db } from '../lib/firebase';
+import { Building2, Mail, Phone, Clock, Globe, Info, Utensils } from 'lucide-react';
 import { motion } from 'motion/react';
 
 const Profile: React.FC = () => {
-  const [loading, setLoading] = useState(false);
-  const [editing, setEditing] = useState(false);
   const [profile, setProfile] = useState({
-    contactInfo: 'admin@nusantaracatering.id | +62 878-5589-1218',
-    operationalHours: 'Sen - Jum: 08:00 - 17:00\nSab - Min: 09:00 - 15:00',
-    aboutUs: 'Nusantara Catering menyajikan cita rasa tradisional Indonesia terbaik untuk acara spesial Anda. Kami menggunakan bahan-bahan segar dan resep otentik untuk memberikan pengalaman bersantap yang tak terlupakan.',
-    address: 'Jl. Merdeka No. 123, Jakarta, Indonesia',
+    cateringName: '',
+    contactEmail: '',
+    phoneNumber: '',
+    businessAddress: '',
+    website: '',
+    aboutUs: '',
+    weekdayHours: '',
+    weekendHours: '',
   });
 
   useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const docRef = doc(db, 'company_profile', 'public');
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          const data = docSnap.data();
-          setProfile({
-            contactInfo: data.contactInfo || '',
-            operationalHours: data.operationalHours || '',
-            aboutUs: data.aboutUs || '',
-            address: data.address || '',
-          });
-        }
-      } catch (err) {
-        console.error('Error fetching profile:', err);
+    const docRef = doc(db, 'company_profile', 'public');
+    const unsubscribe = onSnapshot(docRef, (docSnap) => {
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        setProfile({
+          cateringName: data.cateringName || '',
+          contactEmail: data.contactEmail || '',
+          phoneNumber: data.phoneNumber || '',
+          businessAddress: data.businessAddress || '',
+          website: data.website || '',
+          aboutUs: data.aboutUs || '',
+          weekdayHours: data.weekdayHours || '08:00 - 17:00',
+          weekendHours: data.weekendHours || '09:00 - 15:00',
+        });
       }
-    };
-    fetchProfile();
+    });
+    return () => unsubscribe();
   }, []);
-
-  const handleSaveProfile = async () => {
-    setLoading(true);
-    try {
-      await setDoc(doc(db, 'company_profile', 'public'), profile);
-      setEditing(false);
-    } catch (err) {
-      handleFirestoreError(err, OperationType.WRITE, 'company_profile');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   return (
     <div className="max-w-7xl mx-auto space-y-8 pb-20 px-4 sm:px-6 lg:px-8">
@@ -70,11 +59,11 @@ const Profile: React.FC = () => {
                  <Utensils className="text-white w-12 h-12 sm:w-16 sm:h-16" />
               </motion.div>
               <div className="text-center sm:text-left flex-1">
-                <h1 className="text-3xl sm:text-4xl lg:text-5xl font-display font-black text-white tracking-tight">Nusantara Catering</h1>
+                <h1 className="text-3xl sm:text-4xl lg:text-5xl font-display font-black text-white tracking-tight">{profile.cateringName}</h1>
                 <div className="flex flex-wrap justify-center sm:justify-start items-center gap-4 mt-3">
                   <p className="text-white/90 flex items-center gap-2 text-sm sm:text-base font-medium">
                     <Globe className="w-4 h-4 text-primary-light" />
-                    www.nusantaracatering.id
+                    {profile.website}
                   </p>
                   <span className="hidden sm:inline w-1 h-1 bg-white/30 rounded-full" />
                   <p className="text-white/80 text-sm sm:text-base font-medium">Est. 2010 • Premium Service</p>
@@ -82,12 +71,6 @@ const Profile: React.FC = () => {
               </div>
             </div>
          </div>
-         <button 
-           onClick={() => setEditing(!editing)}
-           className="absolute top-6 right-6 bg-white/10 hover:bg-white/20 backdrop-blur-xl border border-white/20 text-white px-6 py-2.5 rounded-2xl text-sm font-bold transition-all font-display shadow-lg"
-         >
-           {editing ? 'Batal Mengedit' : 'Edit Profil'}
-         </button>
       </motion.div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
@@ -109,18 +92,9 @@ const Profile: React.FC = () => {
                  </div>
                  Tentang Kami
                </h3>
-               {editing ? (
-                 <textarea
-                   rows={6}
-                   value={profile.aboutUs}
-                   onChange={(e) => setProfile({...profile, aboutUs: e.target.value})}
-                   className="w-full px-5 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all text-gray-800 text-lg font-medium leading-relaxed shadow-inner"
-                 />
-               ) : (
-                 <p className="text-slate-600 leading-relaxed text-lg font-medium">
-                   {profile.aboutUs}
-                 </p>
-               )}
+               <p className="text-slate-600 leading-relaxed text-lg font-medium">
+                 {profile.aboutUs}
+               </p>
              </div>
            </motion.section>
 
@@ -142,16 +116,7 @@ const Profile: React.FC = () => {
                    <Building2 className="w-8 h-8 text-primary" />
                 </div>
                 <div className="flex-1">
-                   {editing ? (
-                     <textarea
-                       rows={3}
-                       value={profile.address}
-                       onChange={(e) => setProfile({...profile, address: e.target.value})}
-                       className="w-full px-5 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all shadow-inner"
-                     />
-                   ) : (
-                     <p className="text-gray-900 font-bold text-xl leading-tight">{profile.address}</p>
-                   )}
+                   <p className="text-gray-900 font-bold text-xl leading-tight">{profile.businessAddress}</p>
                    <p className="text-primary font-bold text-[10px] sm:text-xs mt-3 uppercase tracking-[0.2em]">Kantor Pusat Operasional</p>
                 </div>
              </div>
@@ -165,9 +130,6 @@ const Profile: React.FC = () => {
                 />
                 <div className="absolute inset-0 bg-primary/10 pointer-events-none" />
                 <div className="absolute bottom-6 right-6">
-                   <div className="bg-white/90 backdrop-blur-md px-6 py-3 rounded-2xl border border-slate-100 font-bold text-sm text-slate-800 shadow-xl cursor-default">
-                      Buka di Google Maps →
-                   </div>
                 </div>
              </div>
            </motion.section>
@@ -190,16 +152,7 @@ const Profile: React.FC = () => {
                     </div>
                     <div className="flex flex-col">
                       <span className="text-[10px] text-white/60 font-black uppercase tracking-widest mb-1">Email Resmi</span>
-                      {editing ? (
-                        <input 
-                          type="text" 
-                          value={profile.contactInfo}
-                          onChange={(e) => setProfile({...profile, contactInfo: e.target.value})}
-                          className="bg-white/10 border border-white/20 rounded-xl px-4 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-white/30"
-                        />
-                      ) : (
-                        <span className="text-sm font-bold tracking-tight">{profile.contactInfo.split('|')[0].trim()}</span>
-                      )}
+                      <span className="text-sm font-bold tracking-tight">{profile.contactEmail}</span>
                     </div>
                  </div>
                  <div className="flex items-center gap-5">
@@ -208,25 +161,10 @@ const Profile: React.FC = () => {
                     </div>
                     <div className="flex flex-col">
                       <span className="text-[10px] text-white/60 font-black uppercase tracking-widest mb-1">Hotline CS</span>
-                      <span className="text-sm font-bold tracking-tight">+62 812-3456-7890</span>
+                      <span className="text-sm font-bold tracking-tight">{profile.phoneNumber}</span>
                     </div>
                  </div>
-                 <div className="flex items-center gap-5">
-                    <div className="p-3 bg-white/20 rounded-2xl backdrop-blur-md border border-white/20">
-                       <Globe className="w-6 h-6 text-white" />
-                    </div>
-                    <div className="flex flex-col">
-                      <span className="text-[10px] text-white/60 font-black uppercase tracking-widest mb-1">DOKUMENTASI</span>
-                      <a
-                        href="https://drive.google.com/drive/folders/1emxccodawr_G9eMOor_OphULFFykFPJA?usp=sharing"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-sm font-bold tracking-tight underline hover:opacity-80 transition-opacity"
-                      >
-                        📖 Panduan Penggunaan Sistem
-                      </a>
-                    </div>
-                 </div>
+
               </div>
            </motion.section>
 
@@ -243,39 +181,19 @@ const Profile: React.FC = () => {
                 Jam Operasional
               </h3>
               <div className="space-y-4">
-                 {editing ? (
-                   <textarea
-                     rows={3}
-                     value={profile.operationalHours}
-                     onChange={(e) => setProfile({...profile, operationalHours: e.target.value})}
-                     className="w-full px-5 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all text-sm font-medium shadow-inner"
-                   />
-                 ) : (
-                   profile.operationalHours.split('\n').map((line, i) => (
-                     <div key={i} className="flex justify-between items-center p-4 rounded-2xl bg-slate-50/50 border border-slate-50 hover:bg-slate-50 transition-colors">
-                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.1em]">{line.split(':')[0]}</span>
-                        <span className="text-xs font-black text-slate-800">{line.split(':')[1]}</span>
-                     </div>
-                   ))
-                 )}
+                  <div className="flex justify-between items-center p-4 rounded-2xl bg-slate-50/50 border border-slate-50 hover:bg-slate-50 transition-colors">
+                     <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.1em]">Senin-Jumat</span>
+                     <span className="text-xs font-black text-slate-800">{profile.weekdayHours}</span>
+                  </div>
+                  <div className="flex justify-between items-center p-4 rounded-2xl bg-slate-50/50 border border-slate-50 hover:bg-slate-50 transition-colors">
+                     <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.1em]">Sabtu-Minggu</span>
+                     <span className="text-xs font-black text-slate-800">{profile.weekendHours}</span>
+                  </div>
               </div>
               <div className="mt-8 pt-6 border-t border-slate-50">
                 <p className="text-[9px] text-slate-400 font-bold uppercase tracking-[0.2em] text-center italic">Sinkronisasi Realtime Terjamin</p>
               </div>
            </motion.section>
-
-           {editing && (
-             <motion.button
-               initial={{ opacity: 0, y: 10 }}
-               animate={{ opacity: 1, y: 0 }}
-               onClick={handleSaveProfile}
-               disabled={loading}
-               className="w-full orange-gradient text-white py-5 rounded-[2rem] font-black text-lg shadow-2xl shadow-primary/30 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-3 disabled:opacity-70 group"
-             >
-               {loading ? <Loader2 className="w-6 h-6 animate-spin" /> : <Save className="w-6 h-6 group-hover:rotate-12 transition-transform" />}
-               SIMPAN PERUBAHAN
-             </motion.button>
-           )}
         </div>
       </div>
     </div>
@@ -283,3 +201,4 @@ const Profile: React.FC = () => {
 };
 
 export default Profile;
+

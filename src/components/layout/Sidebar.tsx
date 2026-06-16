@@ -9,7 +9,8 @@ import {
   ChefHat, 
   Package, 
   BarChart3, 
-  Wallet,  
+  Wallet, 
+  Settings, 
   Building2, 
   LogOut,
   Utensils,
@@ -40,6 +41,7 @@ const Sidebar: React.FC = () => {
     { name: 'Riwayat Laporan', icon: History, path: '/report-history' },
     { name: 'Transaksi', icon: Wallet, path: '/transactions' },
     { name: 'Profil Perusahaan', icon: Building2, path: '/profile' },
+    { name: 'Pengaturan', icon: Settings, path: '/settings' },
   ];
 
   const handleLogout = () => signOut(auth);
